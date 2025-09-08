@@ -4,7 +4,7 @@ import auth from '../../../firbase.init';
 
 const Login = () => {
 
-    const [user, setUser] = useState([null]);
+    const [user, setUser] = useState(null);
 
     const provider = new GoogleAuthProvider();
     const githubProvider = new GithubAuthProvider();
@@ -13,7 +13,7 @@ const Login = () => {
         signInWithPopup(auth, provider)
             .then(result => {
                 console.log(result);
-                setUser(user)
+                setUser(result.user)
             })
             .catch(err => {
                 console.log('Error', err);
@@ -23,11 +23,13 @@ const Login = () => {
 
     const handleGithubLogin = () => {
         signInWithPopup(auth, githubProvider)
-            .then(() => {
-                console.log('github login successfully')
+            .then((result) => {
+                console.log(result)
+                setUser(result.user)
             })
             .catch((err) => {
                 console.log('Err', err)
+                setUser(null)
             })
     }
 
@@ -35,6 +37,19 @@ const Login = () => {
         signOut(auth)
             .then(() => {
                 console.log('sign out successfully')
+                setUser(null)
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+
+    }
+
+    const handleGithubSignOut = () => {
+        signOut(auth)
+            .then(() => {
+                console.log('sign out successfully')
+                setUser(null)
             })
             .catch((err) => {
                 console.log(err)
@@ -56,10 +71,16 @@ const Login = () => {
                     :
                     <button onClick={handleGoogleLogin} className='btn btn-info'>Google Login</button>
             }
-
-
             <button onClick={handleGithubLogin} className='btn bg-info'>Github Login</button>
 
+
+            {
+                user && <div>
+                    <h1>{user.displayName}</h1>
+                    <p>{user.email}</p>
+                </div>
+            }
+            
 
         </div>
     );
